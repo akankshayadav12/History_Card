@@ -1,6 +1,8 @@
 
 const router = require('express').Router()
-
+router.get("/test", (req, res) => {
+  res.json({ message: "Routes working" });
+});
 const studentCtrl = require("../controllers/studentControllers");
 const teacherControllers = require("../controllers/teacherControllers");
 const courseCtrl = require("../controllers/courseControllers");
@@ -19,6 +21,12 @@ router.get("/roles", roleController.getRoles);
 // Add role
 router.post("/roles", roleController.addRole);
 
+// Update role
+router.put("/roles/:id", roleController.updateRole);
+
+// Delete role
+router.delete("/roles/:id", roleController.deleteRole);
+
 
 // Login and Signup routes
 router.post("/signup", authCtrl.signup);
@@ -29,11 +37,15 @@ router.post("/login", authCtrl.login);
 // Students
 router.post("/students", studentCtrl.createStudent);
 router.get("/students", studentCtrl.getAllStudents);
+router.get(
+  "/student/dashboard",
+  auth(["student"]),
+  studentCtrl.getStudentDashboard
+);
 router.get("/students/:id", studentCtrl.getStudentById);
 router.put("/students/:id", studentCtrl.updateStudent);
-router.get("/students/my", auth(["student"]), studentCtrl.getMyStudents);
+router.get("/students/my", auth(["faculty"]), studentCtrl.getMyStudents);
 router.delete("/students/:id", studentCtrl.deleteStudent);
-router.get("/student/dashboard", auth(["student"]), studentCtrl.getStudentDashboard);
 
 
 
@@ -77,51 +89,3 @@ router.get("/teachers/:id/students", teacherControllers.getTeacherStudents);
 module.exports = router
 
 
-
-//
-
-// const router = require('express').Router();
-
-// const studentCtrl = require("../controllers/studentControllers");
-// const teacherCtrl = require("../controllers/teacherControllers");
-// const courseCtrl = require("../controllers/courseControllers");
-// const hcrCtrl = require("../controllers/hcrControllers");
-// const authCtrl = require("../controllers/authController");
-
-// const auth = require("../middleware/authMiddleware"); // <-- Import auth middleware
-
-// // Auth routes
-// router.post("/auth/signup", authCtrl.signup);
-// router.post("/auth/login", authCtrl.login);
-
-// // Students
-// router.post("/students", auth(["admin","faculty"]), studentCtrl.createStudent); // Only admin/faculty can create
-// router.get("/students", auth(["admin"]), studentCtrl.getAllStudents);           // Only admin sees all students
-// router.get("/students/faculty", auth(["faculty","admin"]), studentCtrl.getFacultyStudents); // Faculty sees own students
-// router.get("/students/:id", auth(["admin","faculty","student"]), studentCtrl.getStudentById); // faculty/admin/student can see based on logic
-// router.put("/students/:id", auth(["admin","faculty"]), studentCtrl.updateStudent);
-// router.delete("/students/:id", auth(["admin","faculty"]), studentCtrl.deleteStudent);
-
-// // Teachers
-// router.post("/teachers", auth(["admin"]), teacherCtrl.createTeacher); // Only admin
-// router.get("/teachers", auth(["admin"]), teacherCtrl.getTeachers);     // Only admin
-// router.get("/teachers/:id", auth(["admin","faculty"]), teacherCtrl.getTeacherById); // maybe faculty can view
-// router.put("/teachers/:id", auth(["admin"]), teacherCtrl.updateTeacher);
-// router.delete("/teachers/:id", auth(["admin"]), teacherCtrl.deleteTeacher);
-
-// // Courses
-// router.post("/courses", auth(["admin","faculty"]), courseCtrl.createCourse); // admin+faculty
-// router.get("/courses", auth(["admin","faculty","student"]), courseCtrl.getAllCourses);
-// router.get("/courses/:id", auth(["admin","faculty","student"]), courseCtrl.getCourseById);
-// router.put("/courses/:id", auth(["admin","faculty"]), courseCtrl.updateCourse);
-// router.delete("/courses/:id", auth(["admin","faculty"]), courseCtrl.deleteCourse);
-
-// // HCRs
-// router.post("/hcr", auth(["admin","faculty","student"]), hcrCtrl.createHCR); // student can create own HCR
-// router.get("/hcr", auth(["admin","faculty"]), hcrCtrl.getAllHCRs);           // admin/faculty sees all
-// router.get("/hcr/:id", auth(["admin","faculty","student"]), hcrCtrl.getHCRById);
-// router.get("/hcr/student/:studentId", auth(["admin","faculty","student"]), hcrCtrl.getHCRsByStudent);
-// router.put("/hcr/:id", auth(["admin","faculty"]), hcrCtrl.updateHCR);
-// router.delete("/hcr/:id", auth(["admin","faculty"]), hcrCtrl.deleteHCR);
-
-// module.exports = router;

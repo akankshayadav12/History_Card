@@ -3,6 +3,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import api from "../services/api"; // ✅ same api wrapper you used in Students.jsx
 import Card from "../components/Card";
+import Navbar from "../components/Navbar";const TABS = [
+  { key: "dashboard", label: "Dashboard" },
+  { key: "students", label: "Students" },
+  { key: "courses", label: "Courses" },
+  { key: "settings", label: "Settings" },
+];
 import DataTable from "../components/DataTable";
 import Modal from "../components/Modal";
 import ConfirmDialog from "../components/ConfirmDialog";
@@ -10,7 +16,9 @@ import SearchBar from "../components/SearchBar";
 import DateRange from "../components/DateRange";
 import { fmtDate } from "../services/helpers";
 
+
 export default function FacultyDashboard() {
+  const [tab, setTab] = useState("dashboard");
   const [students, setStudents] = useState([]);
   const [courses, setCourses] = useState([]);
   const [teachers, setTeachers] = useState([]);
@@ -25,21 +33,26 @@ export default function FacultyDashboard() {
     _id: null,
     name: "",
     course: "",
-    teacher: "",
+    teacher: teachers[0]?._id || "",
     status: "ongoing",
   });
 
   // 🔹 Fetch all data
 const fetchAll = async () => {
   try {
-    const [s, c] = await Promise.all([
-      api.get("/students/my"),   // ✅ only logged-in teacher's students
-      api.get("/courses"),
-    ]);
+   const [s, c, t] = await Promise.all([
+  api.get("/students"),
+  api.get("/courses"),
+  api.get("/teachers"),
+]);
 
-    setStudents(s.data?.students || []);
-    const fetchedCourses = c.data?.courses ?? [];
-    setCourses(Array.isArray(fetchedCourses) ? fetchedCourses : [fetchedCourses]);
+setStudents(s.data?.students || []);
+
+const fetchedCourses = c.data?.courses ?? [];
+setCourses(Array.isArray(fetchedCourses) ? fetchedCourses : []);
+
+const fetchedTeachers = t.data?.teachers ?? [];
+setTeachers(Array.isArray(fetchedTeachers) ? fetchedTeachers : []);
   } catch (err) {
     console.error("Error fetching data", err.message);
     setStudents([]);
@@ -148,48 +161,127 @@ const fetchAll = async () => {
   };
 
   return (
-    <div className="space-y-4 p-6">
-      <h2 className="text-2xl font-bold">Faculty Dashboard</h2>
+  <div className="min-h-full">
+    
+    {/* Navbar */}
+    <Navbar title="Welcome Faculty" />
 
-      {/* Summary cards */}
-      <div className="grid grid-cols-2 gap-4">
-        <Card title="My Students" value={students.length} />
-        <Card title="My Courses" value={courses.length} />
-      </div>
+    <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-      {/* Table */}
-      <Card>
-        <div className="flex items-center justify-between gap-3">
-          <SearchBar
-            value={q}
-            onChange={setQ}
-            placeholder="Search students by name or status"
+      {/* Tabs */}
+      <nav className="card p-2 flex flex-wrap gap-2">
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => setTab(t.key)}
+            className={`px-4 py-2 rounded-xl transition ${
+              tab === t.key
+                ? "bg-primary text-primary-foreground"
+                : "bg-white/5"
+            }`}
           >
-            <DateRange from={from} to={to} setFrom={setFrom} setTo={setTo} />
-            <button className="btn" onClick={openNew}>
-              Add Student
-            </button>
-          </SearchBar>
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
+      {/* Dashboard Section */}
+      {tab === "dashboard" && (
+        <div className="space-y-4">
+
+          <h2 className="text-2xl font-bold">Faculty Dashboard</h2>
+
+          {/* Summary cards */}
+          <div className="grid grid-cols-2 gap-4">
+            <Card title="My Students" value={students.length} />
+            <Card title="My Courses" value={courses.length} />
+          </div>
+
+          {/* Search */}
+          <Card>
+            <div className="flex items-center justify-between gap-3">
+              <SearchBar
+                value={q}
+                onChange={setQ}
+                placeholder="Search students by name or status"
+              >
+                <DateRange
+                  from={from}
+                  to={to}
+                  setFrom={setFrom}
+                  setTo={setTo}
+                />
+
+                <button className="btn" onClick={openNew}>
+                  Add Student
+                </button>
+              </SearchBar>
+            </div>
+          </Card>
+
+          {/* Table */}
+          <Card>
+            <DataTable
+              columns={columns}
+              rows={filtered}
+              onEdit={onEdit}
+              onDelete={onDelete}
+            />
+          </Card>
         </div>
-      </Card>
+      )}
 
-      <Card>
-        <DataTable columns={columns} rows={filtered} onEdit={onEdit} onDelete={onDelete} />
-      </Card>
+      {/* Students Tab */}
+      {tab === "students" && (
+        <Card>
+          <DataTable
+            columns={columns}
+            rows={filtered}
+            onEdit={onEdit}
+            onDelete={onDelete}
+          />
+        </Card>
+      )}
 
-      {/* Add/Edit Modal */}
+      {/* Courses Tab */}
+      {tab === "courses" && (
+        <Card>
+          <div className="space-y-2">
+            {courses.map((c) => (
+              <div
+                key={c._id}
+                className="p-3 rounded-xl bg-white/5"
+              >
+                {c.name}
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {/* Settings */}
+      {tab === "settings" && (
+        <Card>
+          Faculty settings coming soon...
+        </Card>
+      )}
+
+      {/* Modal */}
       <Modal
         open={open}
         onClose={() => setOpen(false)}
         title={form._id ? "Edit Student" : "Add Student"}
       >
         <form onSubmit={save} className="space-y-3">
+
           <div>
             <label className="text-sm opacity-80">Name</label>
             <input
               className="input mt-1"
               value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
               required
             />
           </div>
@@ -199,7 +291,9 @@ const fetchAll = async () => {
             <select
               className="input mt-1"
               value={form.course}
-              onChange={(e) => setForm({ ...form, course: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, course: e.target.value })
+              }
             >
               {courses.map((c) => (
                 <option key={c._id} value={c._id}>
@@ -214,7 +308,9 @@ const fetchAll = async () => {
             <select
               className="input mt-1"
               value={form.teacher}
-              onChange={(e) => setForm({ ...form, teacher: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, teacher: e.target.value })
+              }
             >
               {teachers.map((t) => (
                 <option key={t._id} value={t._id}>
@@ -229,7 +325,9 @@ const fetchAll = async () => {
             <select
               className="input mt-1"
               value={form.status}
-              onChange={(e) => setForm({ ...form, status: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, status: e.target.value })
+              }
             >
               <option value="ongoing">Ongoing</option>
               <option value="completed">Completed</option>
@@ -245,6 +343,7 @@ const fetchAll = async () => {
             >
               Cancel
             </button>
+
             <button className="btn" type="submit">
               Save
             </button>
@@ -252,7 +351,7 @@ const fetchAll = async () => {
         </form>
       </Modal>
 
-      {/* Delete confirm dialog */}
+      {/* Delete Dialog */}
       <ConfirmDialog
         open={confirm}
         onClose={() => setConfirm(false)}
@@ -260,6 +359,8 @@ const fetchAll = async () => {
         title="Delete student?"
         description={`This will remove ${form.name}.`}
       />
-    </div>
-  );
+
+    </main>
+  </div>
+);
 }

@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const User = require('../models/UserModel');
 const UserRole = require('../models/UserRoleModel');
+const Student = require('../models/Student'); // ✅ ADD THIS
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -31,21 +32,24 @@ exports.signup = async (req, res) => {
     const user = await User.create({ name, email, password: hashed, roleId: roleDoc._id });
 
     // If user is a student, create a student document linked to this user
-    if (roleDoc.roleName === 'student') {
-      try {
-        // create minimal student record; course/teacher can be set later by admin/faculty
-        const student = await Student.create({ name, userId: user._id });
-        // optional: attach student id to response (not necessary)
-      } catch (studentErr) {
-        console.error('Failed creating student record for user:', studentErr);
-        // Not fatal for signup — respond with user created but warn
-        return res.status(201).json({
-          success: true,
-          message: 'User created but failed to create student profile. Contact admin.',
-          user: { id: user._id, name: user.name, email: user.email, role: roleDoc.roleName },
-        });
-      }
-    }
+  if (roleDoc.roleName === 'student') {
+  try {
+    const student = await Student.create({
+      name,
+      userId: user._id
+    });
+
+    console.log("Student created:", student);
+
+  } catch (studentErr) {
+    console.error("Student creation failed:", studentErr);
+
+    return res.status(500).json({
+      message: "Student creation failed",
+      error: studentErr.message
+    });
+  }
+}
 
     const userToSend = { id: user._id, name: user.name, email: user.email, role: roleDoc.roleName };
     res.status(201).json({ success: true, message: 'User created', user: userToSend });
@@ -66,10 +70,13 @@ exports.login = async (req, res) => {
 
     // include roleId and roleName in token for convenience
     const token = jwt.sign(
-      { id: user._id, roleId: user.roleId?._id?.toString(), role: user.roleId?.roleName },
-      JWT_SECRET,
-      { expiresIn: '1d' }
-    );
+  {
+    id: user._id,
+    role: user.roleId?.roleName,
+  },
+  JWT_SECRET,
+  { expiresIn: "1d" }
+);
 
     res.json({
       success: true,

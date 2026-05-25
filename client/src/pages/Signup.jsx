@@ -34,7 +34,7 @@ export default function Signup() {
     e.preventDefault();
     setError("");
     try {
-      const { data } = await api.post("/signup", form);
+const { data } = await api.post("/signup", form);
       if (data.success) {
         alert("Signup successful! Please login.");
         navigate("/login");
@@ -113,7 +113,7 @@ export default function Signup() {
               bg-background dark:bg-backgroundDark text-foreground dark:text-foregroundDark
               outline-none transition"
           >
-            {roles.map((r) => (
+            {Array.isArray(roles) && roles.map((r) => (
               <option key={r._id} value={r.roleName}>
                 {r.roleName}
               </option>

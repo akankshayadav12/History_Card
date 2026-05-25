@@ -1,29 +1,44 @@
 const jwt = require("jsonwebtoken");
 
+const JWT_SECRET = process.env.JWT_SECRET || "supersecret123";
+
 const auth = (allowedRoles = []) => {
   return (req, res, next) => {
-    const authHeader = req.headers["authorization"];
-    if (!authHeader) {
-      return res.status(401).json({ success: false, message: "No token provided" });
-    }
+    try {
+      const authHeader = req.headers.authorization;
 
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-      return res.status(401).json({ success: false, message: "Invalid token format" });
-    }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return res.status(403).json({ success: false, message: "Invalid token" });
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({
+          message: "No token provided",
+        });
       }
 
-      if (!allowedRoles.includes(decoded.role)) {
-        return res.status(403).json({ success: false, message: "Forbidden: Insufficient role" });
-      }
+      const token = authHeader.split(" ")[1];
+
+      const decoded = jwt.verify(token, JWT_SECRET);
+
+      console.log("Decoded User:", decoded);
 
       req.user = decoded;
+
+      // Role check
+      if (
+        allowedRoles.length > 0 &&
+        !allowedRoles.includes(decoded.role)
+      ) {
+        return res.status(403).json({
+          message: "Forbidden",
+        });
+      }
+
       next();
-    });
+    } catch (err) {
+      console.log("Auth Middleware Error:", err);
+
+      return res.status(401).json({
+        message: "Invalid token",
+      });
+    }
   };
 };
 

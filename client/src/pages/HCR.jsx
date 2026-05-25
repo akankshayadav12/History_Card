@@ -25,8 +25,7 @@ export default function HCR(){
       api.get('/hcr'),      // GET HCRs
       api.get('/students')  // GET students (optional, for lookup)
     ]);
-    setList(r.data?.records || []); // use r.data.records
-    setStudents(s.data?.students || []); // optional
+setList(r.data?.records || r.data?.hcrs || []);    setStudents(s.data?.students || []); // optional
   } catch (e) {
     console.warn('HCR or Students API not ready yet.', e?.message);
     setList([]);

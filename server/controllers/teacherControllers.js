@@ -1,4 +1,5 @@
 const Teacher = require("../models/Teacher");
+const Student = require("../models/Student");
 // const { createSecretToken } = require("../util/SecretToken");
 // const bcrypt = require("bcryptjs");
 

@@ -14,7 +14,7 @@ export default function Login() {
     e.preventDefault();
     setError("");
     try {
-      const { data } = await api.post("/login", form);
+const { data } = await api.post("/login", form);
       console.log("Login response data:", data);
 
       if (data.success) {
@@ -22,9 +22,15 @@ export default function Login() {
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.user.role);
 
-        if (data.user.role === "admin") navigate("/dashboard/admin");
-        else if (data.user.role === "teacher") navigate("/dashboard/faculty");
-        else navigate("/student/" + data.user.id);
+    if (data.user.role === "admin") {
+  navigate("/dashboard/admin");
+}
+else if (data.user.role === "faculty") {
+  navigate("/dashboard/faculty");
+}
+else if (data.user.role === "student") {
+  navigate("/student/" + data.user.id);
+}
       }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");

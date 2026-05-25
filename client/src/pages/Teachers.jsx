@@ -21,8 +21,8 @@ export default function Teachers(){
 const fetchAll = async () => {
   try {
     const { data } = await api.get('/teachers');
-    const fetched = data?.teachers ?? [];
-    setList(Array.isArray(fetched) ? fetched : [fetched]);
+    const fetched = data?.teachers || data || [];
+setList(Array.isArray(fetched) ? fetched : []);
   } catch (err) {
     console.error('Failed to fetch teachers:', err.message);
     setList([]);
