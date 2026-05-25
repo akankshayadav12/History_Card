@@ -125,6 +125,7 @@ const cors = require("cors");
 
 const apiRoutes = require("./Routes/routes");
 const studentRoutes = require("./Routes/studentRoutes");
+<<<<<<< HEAD
 const UserRole = require("./models/UserRoleModel");
 
 const app = express();
@@ -212,6 +213,13 @@ app.use(
     credentials: true,
   })
 );
+=======
+// MongoDB connection
+MONGO_URI=mongodb+srv://username:password@cluster0.xxxx.mongodb.net/hcrdb
+PORT=5000
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch(err => console.error("❌ MongoDB error:", err));
+>>>>>>> 6fd3814784eff03936964ab446ad968318d65932
 
 app.use(express.json());
 
