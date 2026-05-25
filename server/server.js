@@ -78,7 +78,8 @@ const JWT_SECRET = "supersecret123"; // you can move to .env later
 const roleRoutes = require("./Routes/roleRoutes");
 const studentRoutes = require("./Routes/studentRoutes");
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
+MONGO_URI=mongodb+srv://username:password@cluster0.xxxx.mongodb.net/hcrdb
+PORT=5000
   .then(() => console.log("✅ MongoDB connected"))
   .catch(err => console.error("❌ MongoDB error:", err));
 
