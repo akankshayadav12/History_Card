@@ -60,12 +60,11 @@ const DashboardLayout = () => {
           api.get('/courses'),
         ]);
 
-        // DELETE THIS ENTIRE SECTION:
-setStats({
-  students: sRes.data?.students?.length || sRes.data?.length || 0,
-  teachers: tRes.data?.teachers?.length || tRes.data?.length || 0,
-  courses: cRes.data?.courses?.length || cRes.data?.length || 0,
-});
+        setStats({
+          students: sRes.data?.students?.length || 0,
+          teachers: tRes.data?.teachers?.length || 0,
+          courses: cRes.data?.courses?.length || 0
+        });
       } catch (err) {
         console.error('Error fetching dashboard stats:', err);
       }
@@ -73,6 +72,7 @@ setStats({
 
     fetchStats();
   }, []);
+
 
   return (
     <div className="min-h-full">
