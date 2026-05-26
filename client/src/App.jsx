@@ -156,7 +156,7 @@ export default function App() {
 
         {/* AUTH */}
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        <Route path="/signup" element={<SignUp />} />
 
         {/* DEFAULT */}
         <Route path="*" element={<Navigate to="/login" replace />} />
