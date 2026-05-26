@@ -2,7 +2,7 @@
 
 
 import { useState, useEffect } from 'react';
-import Signup from './pages/SignUp';
+import Signup from './pages/Signup';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Card from './components/Card';
@@ -156,7 +156,7 @@ export default function App() {
 
         {/* AUTH */}
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signup" element={<Signup />} />
 
         {/* DEFAULT */}
         <Route path="*" element={<Navigate to="/login" replace />} />
