@@ -89,11 +89,10 @@ MIDDLEWARE
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "https://history-card5.onrender.com"],
     credentials: true,
   })
 );
-
 app.use(express.json());
 
 /*
