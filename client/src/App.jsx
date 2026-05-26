@@ -60,11 +60,12 @@ const DashboardLayout = () => {
           api.get('/courses'),
         ]);
 
-        setStats({
-          students: sRes.data?.students?.length || sRes.data?.length || 0,
-          teachers: tRes.data?.teachers?.length || tRes.data?.length || 0,
-          courses: cRes.data?.courses?.length || cRes.data?.length || 0,
-        ]);
+        // DELETE THIS ENTIRE SECTION:
+setStats({
+  students: sRes.data?.students?.length || sRes.data?.length || 0,
+  teachers: tRes.data?.teachers?.length || tRes.data?.length || 0,
+  courses: cRes.data?.courses?.length || cRes.data?.length || 0,
+});
       } catch (err) {
         console.error('Error fetching dashboard stats:', err);
       }
