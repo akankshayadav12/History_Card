@@ -1,6 +1,3 @@
-
-
-
 import { useState, useEffect } from 'react';
 import Signup from './pages/Signup';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -14,13 +11,10 @@ import Courses from './pages/Courses';
 import HCR from './pages/HCR';
 
 import api from './services/api';
-
 import Login from './pages/Login';
-
 
 import StudentDashboard from './pages/StudentDashboard';
 import FacultyDashboard from './pages/FacultyDashboard';
-// import FacultyDashboard from './pages/FacultyDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import FacultyStudents from './pages/FacultyStudents';
 import StudentDetails from './pages/StudentDetails';
@@ -37,7 +31,6 @@ const TABS = [
   { key: 'settings', label: 'Settings' },
 ];
 
-// ✅ ProtectedRoute component (NO LOGIC CHANGE)
 function ProtectedRoute({ children, allowedRoles }) {
   const token = Cookies.get('token');
   const role = Cookies.get('role');
@@ -53,13 +46,10 @@ function ProtectedRoute({ children, allowedRoles }) {
   return children;
 }
 
-export default function App() {
+// ✅ Moved DashboardLayout out here and contained the data fetching safely within it
+const DashboardLayout = () => {
   const [tab, setTab] = useState('dashboard');
-  const [stats, setStats] = useState({
-    students: 0,
-    teachers: 0,
-    courses: 0,
-  });
+  const [stats, setStats] = useState({ students: 0, teachers: 0, courses: 0 });
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -71,10 +61,10 @@ export default function App() {
         ]);
 
         setStats({
-          students: sRes.data.students?.length || 0,
-          teachers: tRes.data.teachers?.length || 0,
-          courses: cRes.data.courses?.length || 0,
-        });
+          students: sRes.data?.students?.length || sRes.data?.length || 0,
+          teachers: tRes.data?.teachers?.length || tRes.data?.length || 0,
+          courses: cRes.data?.courses?.length || cRes.data?.length || 0,
+        ]);
       } catch (err) {
         console.error('Error fetching dashboard stats:', err);
       }
@@ -83,7 +73,7 @@ export default function App() {
     fetchStats();
   }, []);
 
-  const DashboardLayout = () => (
+  return (
     <div className="min-h-full">
       <Navbar title="Institute Admin Panel" />
 
@@ -135,19 +125,23 @@ export default function App() {
       </main>
     </div>
   );
+};
 
+export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* ADMIN DASHBOARD */}
-       <Route path="/dashboard/admin" element={<AdminDashboard />} />
+        <Route path="/dashboard/admin" element={<AdminDashboard />} />
 
         {/* FACULTY DASHBOARD */}
-       <Route path="/dashboard/faculty" element={<FacultyDashboard />} />
+        <Route path="/dashboard/faculty" element={<FacultyDashboard />} />
 
         {/* STUDENT DASHBOARD */}
-       <Route path="/dashboard/student" element={<StudentDashboard />} />
+        <Route path="/dashboard/student" element={<StudentDashboard />} />
+
+        {/* BASE ADMIN LAYOUT */}
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={['admin']}><DashboardLayout /></ProtectedRoute>} />
 
         {/* PUBLIC ROUTES */}
         <Route path="/teachers" element={<FacultyList />} />
@@ -158,9 +152,10 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* DEFAULT */}
+        {/* FALLBACK REDIRECTS */}
+        <Route path="/Signup" element={<Navigate to="/signup" replace />} />
+        <Route path="/Login" element={<Navigate to="/login" replace />} />
         <Route path="*" element={<Navigate to="/login" replace />} />
-
       </Routes>
     </BrowserRouter>
   );
