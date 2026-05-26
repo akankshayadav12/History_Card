@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
-import Logo from "../assets/disha_logo.png"; // 👈 replace with your institute logo path
+// import Logo from "../assets/disha_logo.png";
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -50,11 +50,11 @@ const { data } = await api.post("/signup", form);
         
         {/* Logo + Title */}
         <div className="flex flex-col items-center mb-6">
-          <img
+          {/* <img
             src={Logo}// 👈 replace with your institute logo path
             alt="Institute Logo"
             className="w-40 h-40 mb-3"
-          />
+          /> */}
           <h2 className="text-xl font-bold text-foreground dark:text-foregroundDark text-center">
             HCR Institute Signup
           </h2>
