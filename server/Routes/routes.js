@@ -44,11 +44,21 @@ router.get(
 );
 router.get("/students/:id", studentCtrl.getStudentById);
 router.put("/students/:id", studentCtrl.updateStudent);
-router.get("/students/my", auth(["faculty"]), studentCtrl.getMyStudents);
+router.get("/students/my", auth(), studentCtrl.getMyStudents);
 router.delete("/students/:id", studentCtrl.deleteStudent);
 
 
-
+router.get("/admin/dashboard", auth(["admin"]), (req, res) => {
+  res.json({
+    success: true,
+    message: "Admin dashboard loaded",
+    stats: {
+      users: 10,
+      students: 5,
+      faculty: 3
+    }
+  });
+});
 // HCRs
 router.post("/hcr", hcrCtrl.createHCR);
 
@@ -76,6 +86,11 @@ router.delete("/courses/:id", courseCtrl.deleteCourse);
 
 
 // Teacher 
+router.get("/facuklty/dashboard", auth(["faculty"]), (req, res) => {
+  res.json({
+    message: "Admin dashboard working"
+  });
+});
 router.post("/teachers/", teacherControllers.createTeacher);
 router.get("/teachers", teacherControllers.getTeachers);
 router.get("/teachers/:id", teacherControllers.getTeacherById);

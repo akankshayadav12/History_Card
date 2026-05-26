@@ -21,16 +21,16 @@ const { data } = await api.post("/login", form);
         setAuth({ token: data.token, role: data.user.role });
         localStorage.setItem("token", data.token);
         localStorage.setItem("role", data.user.role);
-
-    if (data.user.role === "admin") {
+if (data.user.role === "admin") {
   navigate("/dashboard/admin");
 }
 else if (data.user.role === "faculty") {
   navigate("/dashboard/faculty");
 }
 else if (data.user.role === "student") {
-  navigate("/student/" + data.user.id);
+  navigate("/student");
 }
+
       }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
