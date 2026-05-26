@@ -2,7 +2,7 @@
 
 
 import { useState, useEffect } from 'react';
-import Signup from './pages/Signup';
+import Signup from './pages/SignUp';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Card from './components/Card';
