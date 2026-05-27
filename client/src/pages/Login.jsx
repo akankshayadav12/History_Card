@@ -28,7 +28,7 @@ else if (data.user.role === "faculty") {
   navigate("/dashboard/faculty");
 }
 else if (data.user.role === "student") {
-  navigate("/student");
+  navigate("dasboard/student");
 }
 
       }
