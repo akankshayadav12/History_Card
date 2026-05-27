@@ -22,15 +22,17 @@ const auth = (allowedRoles = []) => {
       req.user = decoded;
 
       // Role check
-      if (allowedRoles.length > 0) {
-  return next(); // temporarily bypass role blocking
-}{
-        return res.status(403).json({
-          message: "Forbidden",
-        });
-      }
+      // Role check
+if (
+  allowedRoles.length > 0 &&
+  !allowedRoles.includes(decoded.role)
+) {
+  return res.status(403).json({
+    message: "Forbidden",
+  });
+}
 
-      next();
+next();
     } catch (err) {
       console.log("Auth Middleware Error:", err);
 
