@@ -10,7 +10,7 @@ const auth = require("../middleware/authMiddleware");
 // --------------------
 // Student Dashboard
 // --------------------
-router.get("/dashboard", auth, async (req, res) => {
+router.get("/dashboard", auth(), async (req, res) => {
   try {
     const student = await Student.findOne({ userId: req.user._id })
       .populate("course")
@@ -32,7 +32,7 @@ router.get("/dashboard", auth, async (req, res) => {
 // --------------------
 // Logged-in student profile
 // --------------------
-router.get("/my", auth, async (req, res) => {
+router.get("/my", auth(), async (req, res) => {
   try {
     const student = await Student.findOne({ userId: req.user._id })
       .populate("course")
