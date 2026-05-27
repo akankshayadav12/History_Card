@@ -150,13 +150,17 @@ export default function App() {
         <Route path="/students/:studentId/detail" element={<StudentDetails />} />
 
         {/* AUTH */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+       {/* AUTH */}
+<Route path="/login" element={<Login />} />
+<Route path="/signup" element={<Signup />} />
 
-        {/* FALLBACK REDIRECTS */}
-        <Route path="/Signup" element={<Navigate to="/signup" replace />} />
-        <Route path="/Login" element={<Navigate to="/login" replace />} />
-        <Route path="*" element={<Navigate to="/login" replace />} />
+{/* DEFAULT ROUTE */}
+<Route path="/" element={<Navigate to="/signup" replace />} />
+
+{/* FALLBACK REDIRECTS */}
+<Route path="/Signup" element={<Navigate to="/signup" replace />} />
+<Route path="/Login" element={<Navigate to="/login" replace />} />
+<Route path="*" element={<Navigate to="/signup" replace />} />
       </Routes>
     </BrowserRouter>
   );
